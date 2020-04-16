@@ -12,7 +12,7 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, Off, On, Wait} state;
+enum States {Start, Off, On} state;
 void Tick() {
 	unsigned char button = PINA & 0x01;
 	switch(state) { // Transitions
@@ -32,23 +32,26 @@ void Tick() {
 		
     		case On:    
 			if(!button){
-				state = Wait;
- 
-			}
-			else{
 				state = On;
-			}
-			break;
-		
-		case Wait:
-			if(!button){
-				state = Wait;
+ 
 			}
 			else{
 				state = Off;
 			}
 			break;
-    		default:    
+		
+	/*	case Wait:
+			if(!button){
+				state = Wait;
+			}
+			else{
+				state = Off;
+				PORTB = 0x01;
+			}
+	
+			break;
+    		*/
+		default:    
 			state = Start; 
 			break;
     }; // Transitions
@@ -62,9 +65,10 @@ void Tick() {
     		case On:    
 			PORTB = 0x02;
 			break;
-		case Wait:
+		/*case Wait:
 			PORTB = 0x02;
 			break;
+		*/
     		default:    
 			break;
        }; // State actions
