@@ -12,46 +12,49 @@
 #include "simAVRHeader.h"
 #endif
 
-enum States {Start, Off, On} state;
+enum States {Start, Press, Hold, Off, On} state;
 void Tick() {
 	unsigned char button = PINA & 0x01;
 	switch(state) { // Transitions
     		case Start:    
-			state = Off;
+			state = Press;
 			break;
-    		case Off:    
+    		case Press:    
 			if(button){
-				state = On;
+				state = Hold;
 
 			}
 			else{
-				state = Off;
+				state = Press;
 		
 			}
 			break;
 		
-    		case On:    
+    		case Hold:    
 			if(!button){
-				state = On;
+				state = Off;
  
 			}
 			else{
+				state = Hold;
+			}
+			break;
+		
+		case Off:
+			if(button){
+				state = On;
+			}
+			else{
 				state = Off;
 			}
 			break;
 		
-	/*	case Wait:
-			if(!button){
-				state = Wait;
-			}
-			else{
-				state = Off;
-				PORTB = 0x01;
-			}
-	
-			break;
-    		*/
-		default:    
+		case On:                                                                                                                                                                                                                  if(!button){
+                                state = Press;                                                                                                                                                                                                }
+                        else{
+                                state = On;                                                                                                                                                                                               }
+                        break;
+    		default:    
 			state = Start; 
 			break;
     }; // Transitions
@@ -59,16 +62,18 @@ void Tick() {
 	switch(state) { // State actions
        		case Start:    
 			break;
-    		case Off:    
+    		case Press:    
 			PORTB = 0x01; 
 			break;	
-    		case On:    
+    		case Hold:    
 			PORTB = 0x02;
 			break;
-		/*case Wait:
+		case Off:
 			PORTB = 0x02;
 			break;
-		*/
+		case On:
+			PORTB = 0x01;
+			break;
     		default:    
 			break;
        }; // State actions
